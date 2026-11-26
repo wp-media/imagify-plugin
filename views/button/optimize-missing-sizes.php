@@ -9,7 +9,7 @@ if ( empty( $data['atts'] ) ) {
 
 if ( ! isset( $data['atts']['class'] ) ) {
 	// Class used for JS.
-	$data['atts']['class'] = 'optimize-missing-sizes';
+	$data['atts']['class'] = 'button-imagify-optimize-missing-sizes';
 }
 
 if ( ! isset( $data['atts']['data-processing-label'] ) ) {

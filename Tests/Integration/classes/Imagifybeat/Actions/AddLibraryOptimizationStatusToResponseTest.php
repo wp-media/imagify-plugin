@@ -22,7 +22,7 @@ class AddLibraryOptimizationStatusToResponseTest extends TestCase {
 	 *
 	 * @var bool
 	 */
-	protected $useApi = false;
+	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * Clean up.
@@ -159,6 +159,6 @@ class AddLibraryOptimizationStatusToResponseTest extends TestCase {
 		}
 
 		// The layout must not leak into the next requests handled by the same PHP process.
-		$this->assertFalse( has_filter( 'imagify_is_media_page', '__return_true' ) );
+		$this->assertFalse( apply_filters( 'imagify_is_media_page', false ) );
 	}
 }

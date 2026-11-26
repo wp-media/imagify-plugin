@@ -271,18 +271,21 @@ final class Actions {
 		$response[ $imagifybeat_id ] = [];
 
 		// This request is not the Edit Media page load, but its panel must keep the Edit Media layout.
-		$is_edit_media = 'attachment' === $screen_id;
+		// A dedicated callback, so removing it can't remove a `__return_true` added by someone else.
+		$force_media_page = static function () {
+			return true;
+		};
 
-		if ( $is_edit_media ) {
-			add_filter( 'imagify_is_media_page', '__return_true' );
+		if ( 'attachment' === $screen_id ) {
+			add_filter( 'imagify_is_media_page', $force_media_page, PHP_INT_MAX );
 		}
 
-		foreach ( $statuses as $context_id => $process ) {
-			$response[ $imagifybeat_id ][ $context_id ] = get_imagify_media_column_content( $process, false );
-		}
-
-		if ( $is_edit_media ) {
-			remove_filter( 'imagify_is_media_page', '__return_true' );
+		try {
+			foreach ( $statuses as $context_id => $process ) {
+				$response[ $imagifybeat_id ][ $context_id ] = get_imagify_media_column_content( $process, false );
+			}
+		} finally {
+			remove_filter( 'imagify_is_media_page', $force_media_page, PHP_INT_MAX );
 		}
 
 		return $response;

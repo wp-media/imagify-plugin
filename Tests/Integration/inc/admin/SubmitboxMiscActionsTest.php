@@ -223,4 +223,47 @@ class SubmitboxMiscActionsTest extends TestCase {
 		$this->assertStringContainsString( '<h4>Imagify</h4>', $output );
 		$this->assertStringNotContainsString( 'imagify-datas-list', $output );
 	}
+
+	/**
+	 * Test: when the media has a backup, the Re-optimize and Restore buttons keep the classes media-modal.js binds to,
+	 * and the data used to rebuild the comparison button is in the container.
+	 *
+	 * @return void
+	 */
+	public function testShouldPrintReoptimizeAndRestoreButtonsWithJsClasses(): void {
+		$attachment_id = $this->create_attachment();
+
+		$this->set_optimized( $attachment_id );
+
+		$backup_path = imagify_get_optimization_process( $attachment_id, 'wp' )->get_media()->get_raw_backup_path();
+
+		wp_mkdir_p( dirname( $backup_path ) );
+		file_put_contents( $backup_path, 'not-a-real-jpeg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		$this->created_files[] = $backup_path;
+
+		$output = $this->get_panel( $attachment_id );
+
+		$this->assertMatchesRegularExpression( $this->container_regex( $attachment_id, '.*class="button-imagify-manual-reoptimize"' ), $output );
+		$this->assertMatchesRegularExpression( $this->container_regex( $attachment_id, '.*class="button-imagify-restore attachment-has-backup"' ), $output );
+		$this->assertMatchesRegularExpression( $this->container_regex( $attachment_id, '.*<input id="imagify-original-src" type="hidden" value="[^"]+">' ), $output );
+		$this->assertMatchesRegularExpression( $this->container_regex( $attachment_id, '.*<input id="imagify-optimized-size" type="hidden" value="[^"]+">' ), $output );
+	}
+
+	/**
+	 * Test: the "Optimize missing thumbnails" button has the class media-modal.js binds to.
+	 *
+	 * @return void
+	 */
+	public function testShouldPrintOptimizeMissingSizesButtonWithJsClass(): void {
+		$output = \Imagify_Views::get_instance()->get_template(
+			'button/optimize-missing-sizes',
+			[
+				'url'   => admin_url( 'admin-post.php' ),
+				'count' => 2,
+			]
+		);
+
+		$this->assertStringContainsString( 'class="button-imagify-optimize-missing-sizes"', $output );
+	}
 }
