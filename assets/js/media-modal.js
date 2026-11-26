@@ -128,6 +128,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$container.html( processingTemplate( {
 				label: $obj.data( 'processing-label' )
 			} ) );
+			w.imagify.modal.triggerContainersUpdated( context, id );
 
 			$.get( {
 				url:     href.replace( 'admin-post.php', 'admin-ajax.php' ),
@@ -149,6 +150,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 					// until Imagifybeat's next tick catches the mismatch.
 					w.imagify.modal.unlockItem( context, id );
 					$container.html( previousHtml );
+					w.imagify.modal.triggerContainersUpdated( context, id );
 				} );
 		},
 
@@ -221,6 +223,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 			$containers.html( htmlContent );
 			w.imagify.modal.unlockItem( context, id );
+			w.imagify.modal.triggerContainersUpdated( context, id );
 
 			if ( ! w.imagify.modal.working.length ) {
 				// Work is done.
@@ -229,6 +232,22 @@ window.imagify.drawMeAChart = function( canvas ) {
 				// Reset Imagifybeat interval.
 				w.imagify.beat.resetInterval();
 			}
+		},
+
+		/**
+		 * Tell other scripts that the content of the containers of a media has been replaced.
+		 * The Edit Media screen uses it to rebuild the buttons printed under the image.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 */
+		triggerContainersUpdated: function( context, id ) {
+			d.dispatchEvent( new CustomEvent( 'imagify-container-updated', {
+				detail: {
+					context: context,
+					id:      id
+				}
+			} ) );
 		},
 
 		/**

@@ -145,16 +145,19 @@ function get_imagify_attachment_optimization_text( $process ) {
 		$output .= Imagify_Views::get_instance()->get_template(
 			'button/restore',
 			[
-				'url'  => $url,
-				'atts' => [
-					'class' => $is_media_page ? '' : null,
-				],
+				'url' => $url,
 			]
 		);
 
 		if ( ! $is_library_page ) {
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . esc_url( $media->get_backup_url() ) . '">';
 			$output .= '<input id="imagify-original-size" type="hidden" value="' . $data->get_original_size() . '">';
+
+			if ( $data->is_optimized() ) {
+				// Used by the comparison button of the Edit Media screen, which is rebuilt when this HTML is replaced by AJAX.
+				$output .= '<input id="imagify-optimized-size" type="hidden" value="' . esc_attr( $data->get_optimized_size() ) . '">';
+			}
+
 			$output .= '<input id="imagify-full-src" type="hidden" value="' . esc_url( $media->get_fullsize_url() ) . '">';
 
 			if ( $media->is_image() ) {
@@ -262,12 +265,6 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 		'attachment_id' => $media->get_id(),
 		'context'       => $media->get_context(),
 	];
-
-	if ( Imagify_Views::get_instance()->is_media_page() ) {
-		$data['atts'] = [
-			'class' => '',
-		];
-	}
 
 	if ( $media_level < 1 ) {
 		$url_args['optimization_level'] = 2;

@@ -477,7 +477,17 @@ class Imagify_Views {
 	public function is_media_page() {
 		global $pagenow, $typenow;
 
-		return 'post.php' === $pagenow && 'attachment' === $typenow;
+		$is_media_page = 'post.php' === $pagenow && 'attachment' === $typenow;
+
+		/**
+		 * Filter whether we’re displaying a media page (the Edit Media screen).
+		 * AJAX responses that refresh the Edit Media panel use it to print the same layout as the page load.
+		 *
+		 * @since 2.3.6
+		 *
+		 * @param bool $is_media_page True when displaying a media page.
+		 */
+		return wpm_apply_filters_typed( 'boolean', 'imagify_is_media_page', $is_media_page );
 	}
 
 

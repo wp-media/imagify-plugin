@@ -503,58 +503,83 @@
 	/**
 	 * Imagify comparison inside Media post edition.
 	 */
-	if ( imagifyTTT.imageWidth && $( '.post-php .wp_attachment_image .thumbnail' ).length > 0 ) {
-
-		var $oriParent   = $( '.post-php .wp_attachment_image' ),
-			oriSource    = { src: $( '#imagify-full-original' ).val(), size: $( '#imagify-full-original-size' ).val() },
-			$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ),
-			filesize, saving;
-
+	if ( imagifyTTT.imageWidth && d.querySelector( '.post-php .wp_attachment_image .thumbnail' ) ) {
 		imagifyTTT.widthLimit = parseInt( imagifyTTT.widthLimit, 10 );
 
-		// If shown image > 360, use twentytwenty.
-		if ( imagifyTTT.imageWidth > imagifyTTT.widthLimit && oriSource.src ) {
+		/**
+		 * Print the button under the image from the data of the Imagify panel: "Compare Original VS Optimized" when the
+		 * media is optimized and has a backup, "Optimize" when it is not optimized. Nothing while it is processing.
+		 */
+		var refreshEditMediaButtons = function() {
+			var editButton = d.querySelector( '[id^="imgedit-open-btn-"]' ),
+				container  = d.querySelector( '#misc-publishing-actions .misc-pub-imagify .imagify-data-actions-container' ),
+				originalSrc, originalSize, optimizedSize, saving, optimizeButton, button;
 
-			filesize = $( '#imagify-full-optimized-size' ).val();
-			saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
-
-			// Create button to trigger.
-			$( '[id^="imgedit-open-btn-"]' ).before( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>' );
-
-			// Modal and trigger event creation.
-			imagifyTwentyModal( {
-				width:         parseInt( imagifyTTT.imageWidth, 10 ),
-				height:        parseInt( imagifyTTT.imageHeight, 10 ),
-				originalUrl:   oriSource.src,
-				optimizedUrl:  imagifyTTT.imageSrc,
-				originalSize:  oriSource.size,
-				optimizedSize: filesize,
-				saving:        saving,
-				modalAppendTo: $oriParent,
-				trigger:       $( '#imagify-start-comparison' ),
-				modalId:       'imagify-visual-comparison'
+			// Remove the buttons printed for the previous state.
+			Array.prototype.forEach.call( d.querySelectorAll( '#imagify-start-comparison, #imagify-visual-comparison, #imagify-optimize-trigger' ), function( element ) {
+				element.parentNode.removeChild( element );
 			} );
-		}
-		// Else put images next to next.
-		else if ( imagifyTTT.imageWidth < imagifyTTT.widthLimit && oriSource.src ) {
-			// TODO
-		}
-		// If image has no backup.
-		else if ( $( '#imagify-full-original' ).length > 0 && '' === oriSource.src ) {
-			// do nothing ?
-		}
-		// In case image is not optimized.
-		else {
-			// If is not in optimizing process, propose the Optimize button trigger.
-			if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ).length === 1 ) {
-				$( '[id^="imgedit-open-btn-"]' ).before( '<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimizeBtn.attr( 'href' ) + '">' + imagifyTTT.labels.optimize + '</a>' );
 
-				$( '#imagify-optimize-trigger' ).on( 'click', function() {
-					$( this ).prev( '.spinner' ).removeClass( 'imagify-hidden' ).addClass( 'is-active' );
+			if ( ! editButton || ! container ) {
+				return;
+			}
+
+			originalSrc   = container.querySelector( '#imagify-original-src' );
+			originalSize  = container.querySelector( '#imagify-original-size' );
+			optimizedSize = container.querySelector( '#imagify-optimized-size' );
+
+			// If shown image > 360, use twentytwenty.
+			if ( originalSrc && originalSrc.value && optimizedSize && parseInt( imagifyTTT.imageWidth, 10 ) > imagifyTTT.widthLimit ) {
+				saving = d.querySelector( '.imagify-data-item .imagify-chart-value' );
+				button = d.createElement( 'button' );
+
+				button.type        = 'button';
+				button.id          = 'imagify-start-comparison';
+				button.className   = 'imagify-button-primary button-primary imagify-modal-trigger';
+				button.textContent = imagifyTTT.labels.compare;
+				button.setAttribute( 'data-target', '#imagify-visual-comparison' );
+				editButton.parentNode.insertBefore( button, editButton );
+
+				// Modal and trigger event creation.
+				imagifyTwentyModal( {
+					width:         parseInt( imagifyTTT.imageWidth, 10 ),
+					height:        parseInt( imagifyTTT.imageHeight, 10 ),
+					originalUrl:   originalSrc.value,
+					optimizedUrl:  imagifyTTT.imageSrc,
+					originalSize:  originalSize ? originalSize.value : '',
+					optimizedSize: optimizedSize.value,
+					saving:        saving ? saving.textContent : '',
+					modalAppendTo: $( d.querySelector( '.post-php .wp_attachment_image' ) ),
+					trigger:       $( button ),
+					modalId:       'imagify-visual-comparison'
+				} );
+				return;
+			}
+
+			optimizeButton = container.querySelector( '.button-imagify-optimize' );
+
+			// In case image is not optimized, propose the Optimize button trigger.
+			if ( optimizeButton ) {
+				button = d.createElement( 'a' );
+
+				button.id          = 'imagify-optimize-trigger';
+				button.className   = 'imagify-button-primary button-primary imagify-optimize-trigger';
+				button.href        = optimizeButton.href;
+				button.textContent = imagifyTTT.labels.optimize;
+				editButton.parentNode.insertBefore( button, editButton );
+
+				// Use the button of the panel, so both share the same AJAX flow. The panel update removes this one.
+				button.addEventListener( 'click', function( e ) {
+					e.preventDefault();
+					optimizeButton.click();
 				} );
 			}
-		}
+		};
 
+		refreshEditMediaButtons();
+
+		// The panel content is replaced in place when a media is processed (see media-modal.js).
+		d.addEventListener( 'imagify-container-updated', refreshEditMediaButtons );
 	}
 
 	/**
