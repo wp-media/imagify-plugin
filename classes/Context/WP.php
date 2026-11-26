@@ -207,7 +207,7 @@ final class WP extends AbstractContext {
 	 * @since  1.9
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'manage-site', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
 	 * @return string
 	 */
 	public function get_capacity( $describer ) {
@@ -216,6 +216,12 @@ final class WP extends AbstractContext {
 		switch ( $describer ) {
 			case 'manage':
 				$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			case 'manage-site':
+				// Acts on the current site only: a site admin keeps it on a network-activated install.
+				$manage   = $this->get_capacity( 'manage' );
+				$capacity = ( imagify_is_active_for_network() && 'manage_network_options' === $manage ) ? 'manage_options' : $manage;
 				break;
 
 			case 'bulk-optimize':

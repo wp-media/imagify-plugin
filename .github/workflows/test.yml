@@ -86,14 +86,17 @@ jobs:
               run: composer test-integration
 
             # Site-aware tests also run on a multisite sub-site, with Imagify activated per site, then network-wide.
-            # The other tests assume a single site, so only these groups run there (see Tests/Integration/bootstrap.php).
+            # The other tests assume a single site, so only the site-aware groups run there (see Tests/Integration/bootstrap.php).
+            # Network-activated, the permission tests (CheckPermissionsTest) run next to the Imagifybeat group.
             - name: Integration tests (multisite)
-              run: vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group Imagifybeat
+              run: vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group Imagifybeat,Abilities,MCP,Context
               env:
                   WP_MULTISITE: 1
 
             - name: Integration tests (multisite, network-activated)
-              run: vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group Imagifybeat
+              run: |
+                  vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group Imagifybeat
+                  vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --filter CheckPermissionsTest
               env:
                   WP_MULTISITE: 1
                   IMAGIFY_TESTS_NETWORK_ACTIVE: 1

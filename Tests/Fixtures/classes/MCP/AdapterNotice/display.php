@@ -6,9 +6,10 @@ return [
 	'test_data' => [
 		'shouldDisplayNoticeForAdministratorWithSessions' => [
 			'config'   => [
-				'role'      => 'administrator',
-				'meta'      => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
-				'dismissed' => false,
+				'role'        => 'administrator',
+				'super_admin' => true,
+				'meta'        => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
+				'dismissed'   => false,
 			],
 			'expected' => [
 				'contains'     => [
@@ -22,9 +23,10 @@ return [
 		],
 		'shouldDisplayNoticeForAdministratorWithOAuthRefreshToken' => [
 			'config'   => [
-				'role'      => 'administrator',
-				'meta'      => [ 'mcp_refresh_jti_abc123' => 'x' ],
-				'dismissed' => false,
+				'role'        => 'administrator',
+				'super_admin' => true,
+				'meta'        => [ 'mcp_refresh_jti_abc123' => 'x' ],
+				'dismissed'   => false,
 			],
 			'expected' => [
 				'contains'     => [ $notice_text ],
@@ -55,9 +57,24 @@ return [
 		],
 		'shouldNotDisplayNoticeOnceDismissed'             => [
 			'config'   => [
-				'role'      => 'administrator',
-				'meta'      => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
-				'dismissed' => true,
+				'role'        => 'administrator',
+				'super_admin' => true,
+				'meta'        => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
+				'dismissed'   => true,
+			],
+			'expected' => [
+				'contains'     => [],
+				'not_contains' => [ 'MCP Adapter' ],
+			],
+		],
+		'shouldNotDisplayNoticeForSubsiteAdministrator'   => [
+			// Plugins cannot be installed from a sub-site: the install link would lead nowhere.
+			'config'   => [
+				'site'        => 'multisite',
+				'role'        => 'administrator',
+				'super_admin' => false,
+				'meta'        => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
+				'dismissed'   => false,
 			],
 			'expected' => [
 				'contains'     => [],

@@ -65,7 +65,7 @@ The OAuth server's fixed tool list is only the three generic mcp-adapter tools, 
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
-| `Imagify\Abilities\AbstractAbility` | Base class for abilities; provides `check_permissions()`, `fire_executed()`, and `guard_credit_confirmation()` (see [Credit confirmation flow](#credit-confirmation-flow)). |
+| `Imagify\Abilities\AbstractAbility` | Base class for abilities; provides `check_permissions()`, `has_site_manage_permission()`, `is_site_only_caller()`, `fire_executed()`, and `guard_credit_confirmation()` (see [Credit confirmation flow](#credit-confirmation-flow)). |
 | `Imagify\Abilities\CreditConsumingAbilityInterface` | Contract for abilities that spend Imagify quota (`get_impact_estimate()`); opts an ability into `guard_credit_confirmation()`. Implemented by `OptimizeMedia`, `BulkOptimize`, `GenerateMissingNextgen`. |
 | `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
 | `Imagify\Abilities\GenerateMissingNextgen` | MCP ability: queue generation of missing next-gen (WebP/AVIF) versions (`imagify/generate-missing-nextgen`). |
@@ -79,7 +79,7 @@ The OAuth server's fixed tool list is only the three generic mcp-adapter tools, 
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
-| `Imagify\MCP\AdapterNotice` | Prints the [migration notice](#migration-notice) on `admin_notices`. |
+| `Imagify\MCP\AdapterNotice` | Prints the [migration notice](#migration-notice) on `admin_notices` and `network_admin_notices`. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
 
 ## AbilitiesInterface contract
@@ -95,7 +95,7 @@ interface AbilitiesInterface {
 ```
 
 - `register()` — calls `wp_register_ability()` (guarded by `function_exists`) wiring `execute_callback` and `permission_callback`.
-- `check_permissions( $input = null )` — checks capabilities through `imagify_get_context( ... )->current_user_can( ... )`, so the `imagify_capacity` filter and multisite rules apply. The WP Abilities API passes the call's input, so the check can depend on what the input targets.
+- `check_permissions( $input = null )` — checks capabilities through `imagify_get_context( ... )->current_user_can( ... )`, so the `imagify_capacity`, `imagify_current_user_can` and `imagify_user_can` filters and the multisite rules apply (see [Multisite](#multisite)). The WP Abilities API passes the call's input, so the check can depend on what the input targets.
 - `execute()` — returns the tool-result value (array, string, or any MCP-compatible type).
 
 ## Registered abilities
@@ -188,7 +188,7 @@ success/error values.
 ### `imagify/bulk-optimize`
 
 **Class:** `Imagify\Abilities\BulkOptimize`  
-**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `bulk-optimize` in the requested `context` (`manage_network_options` for `custom-folders` on multisite)  
+**Capability required:** the Imagify `manage` capability or, on a network-activated install, `manage-site` (`manage_options` on the current site), plus `bulk-optimize` in the requested `context` (`manage_network_options` for `custom-folders` on multisite, so a site admin of a network-activated install can run `wp` only)  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
@@ -220,7 +220,7 @@ label always matches the branch the counts came from.
 ### `imagify/generate-missing-nextgen`
 
 **Class:** `Imagify\Abilities\GenerateMissingNextgen`  
-**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `bulk-optimize` in every context the generation runs on (`manage_network_options` for custom folders on multisite)  
+**Capability required:** the Imagify `manage` capability or, on a network-activated install, `manage-site` (`manage_options` on the current site), plus `bulk-optimize` in every context the generation runs on (`manage_network_options` for custom folders on multisite; a site admin's run covers the media library only)  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
@@ -242,11 +242,7 @@ Queues generation of missing next-gen (WebP/AVIF) versions for all optimized med
 | `queued_count` | integer | Number of images queued for next-gen generation. Present only on `scheduled`/`error`. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `scheduled`/`error`. |
 
-`get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen`
-stat service (`get_stat()`, injected via DI — not the 2-day cached `get_cached_stat()`, since a stale
-count could exceed `total` and mislead the credit-spend decision); `total` sums
-`imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. `count` is
-clamped to `total` as a defensive safeguard.
+When the run includes custom folders, `get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen` stat service (`get_stat()`, injected via DI, not the 2-day cached `get_cached_stat()`, since a stale count could exceed `total` and mislead the credit-spend decision), and `total` sums `imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. When it does not (a network-activated install outside the network admin), both only cover the run's contexts: `count` sums `has_optimized_media_without_nextgen()` of each context in `Bulk::get_contexts()`, and `total` leaves custom folders out, so network-wide files are never revealed. `count` is clamped to `total` as a defensive safeguard.
 
 ### `imagify/optimize-media`
 
@@ -256,7 +252,7 @@ Registered by `Imagify\Abilities\OptimizeMedia`. Optimizes a specific WordPress 
 |-----|-------|
 | Slug | `imagify/optimize-media` |
 | Class | `Imagify\Abilities\OptimizeMedia` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability or, on a network-activated install, `manage-site` (`manage_options` on the current site) |
 | Annotations | `readonly: false`, `destructive: true`, `idempotent: false` |
 | MCP public | `true` |
 
@@ -289,11 +285,13 @@ a single media always costs exactly one unit, so `impact.total` is omitted from 
 ### `imagify/restore-media`
 
 **Class:** `Imagify\Abilities\RestoreMedia`  
-**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `manual-restore` on the resolved media (`edit_post` for a library attachment, `manage_network_options` for a custom-folder file on multisite)  
+**Capability required:** the Imagify `manage` capability or, on a network-activated install, `manage-site` (`manage_options` on the current site), plus `manual-restore` on the resolved media (`edit_post` for a library attachment, `manage_network_options` for a custom-folder file on multisite). A caller holding only `manage-site` never reaches the custom-folders table: a custom-folder file ID gets the same `Invalid media.` error as an unknown ID  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
 Restores an optimized media to its original state using the stored backup file. Requires that backup was enabled (`backup: 1` in settings) at the time of optimization.
+
+An ID that is neither an attachment nor a known custom-folder file (no row in the custom-folders table) returns the `Invalid media.` error for every caller, instead of a permission error or a "not optimized" error.
 
 **Input schema:**
 
@@ -310,6 +308,47 @@ Restores an optimized media to its original state using the stored backup file. 
 | `status` | `"success"` \| `"error"` | Result status. |
 | `restored_size` | integer \| null | Restored original file size in bytes, or null on error. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+## Multisite
+
+Every ability checks the Imagify `manage` capability in the `wp` context: `manage_options` on a single site or when Imagify is activated per site, `manage_network_options` when Imagify is network-activated. Abilities that only touch the current site's own media also accept the `manage-site` describer, which resolves to `manage_options` on the current site when Imagify is network-activated and to exactly what `manage` resolves to everywhere else. A site admin of a network-activated install therefore keeps those abilities; abilities that read or change network-wide data stay reserved to super admins.
+
+Decision (#1322): site admins regain the per-site abilities on network-activated installs; `bulk-optimize` for `custom-folders` stays network-only, because the custom-folders table is network-wide.
+
+| Ability | Scope | Single site: admin | Per-site activation: site admin | Network-activated: super admin | Network-activated: site admin |
+|---------|-------|--------------------|---------------------------------|--------------------------------|-------------------------------|
+| `imagify/bulk-optimize` (`wp`) | per site | allowed | allowed | allowed | allowed |
+| `imagify/bulk-optimize` (`custom-folders`) | network-wide | allowed | denied (`manage_network_options` on any multisite) | allowed | denied |
+| `imagify/generate-missing-nextgen` | per site, plus custom folders when the run includes them | allowed | allowed: the run covers the media library only (custom folders need `manage_network_options`) | allowed | allowed: the run covers the media library only |
+| `imagify/optimize-media` | per site | allowed | allowed | allowed | allowed |
+| `imagify/restore-media` (attachment) | per site | allowed | allowed | allowed | allowed |
+| `imagify/restore-media` (custom-folder file) | network-wide | allowed | denied | allowed | `Invalid media.` error (same as an unknown ID) |
+| `imagify/get-media-status` | per site | allowed | allowed | allowed | allowed |
+| `imagify/get-nextgen-coverage` | network-wide | allowed | allowed | allowed | denied |
+| `imagify/get-stats` | network-wide | allowed | allowed | allowed | denied |
+| `imagify/get-account` | network-wide | allowed | allowed | allowed | denied |
+| `imagify/get-settings` | network-wide | allowed | allowed | allowed | denied |
+| `imagify/update-settings` | network-wide | allowed | allowed | allowed | denied |
+
+"Allowed" means a user with the administrator role (or a super admin where stated). Editors and subscribers are denied everywhere. On per-site activation `manage-site` resolves to `manage_options`, the same as `manage`.
+
+### The `manage-site` describer
+
+- `Imagify\Context\WP::get_capacity( 'manage-site' )` returns `manage_options` when Imagify is network-activated and `manage` resolves to `manage_network_options`; otherwise it returns what `manage` resolves to. If a site customizes `manage` through `imagify_capacity` to another capability, `manage-site` follows that value. A filter that returns `manage_network_options` for `manage` cannot be told apart from the default, so it does not keep site admins out.
+- To keep the per-site abilities super-admin only on a network-activated install, filter `imagify_capacity` for the `manage-site` describer. That filter runs last, so its value is the one checked:
+
+  ```php
+  add_filter( 'imagify_capacity', function ( $capacity, $describer ) {
+  	return 'manage-site' === $describer ? 'manage_network_options' : $capacity;
+  }, 10, 2 );
+  ```
+- `Context\CustomFolders` maps `manage-site` like `manage` (`manage_network_options` on a network-activated install), so it never grants a site admin more than `manage` does there.
+- The `imagify_capacity`, `imagify_current_user_can` and `imagify_user_can` filters all run for `manage-site`. For the two user-can filters, `AbstractContext::user_can()` runs them a second time with the `manage` describer as a deny-only pass: a filter written for `manage` can deny `manage-site` but never grant it. For one `manage-site` check in the `wp` context, each of these filters can therefore fire twice (`imagify_capacity` twice for `manage`, plus once for `manage-site`). An ability that checks `manage` first and then `manage-site` runs each up to three times. Filters must be idempotent.
+- `imagify_mcp_permission_denied` still reports the required capability `manage`.
+
+### Account details for site-only callers
+
+A caller holding `manage-site` without `manage` shares the account quota but does not see account details: `insufficient_quota` responses omit `next_date_update` and `upgrade_url`, and `confirmation_required` responses omit `quota_remaining`. The status codes and messages are unchanged, and no output schema requires those keys.
 
 ## Hooks
 
@@ -341,7 +380,7 @@ Registered by `Imagify\Abilities\UpdateSettings`. Accepts a partial settings obj
 |-----|-------|
 | Slug | `imagify/update-settings` |
 | Class | `Imagify\Abilities\UpdateSettings` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability (`manage_options`, or `manage_network_options` when Imagify is network-activated) |
 | Annotations | `readonly: false`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -376,7 +415,7 @@ Registered by `Imagify\Abilities\GetAccount`. Returns the current Imagify accoun
 |-----|-------|
 | Slug | `imagify/get-account` |
 | Class | `Imagify\Abilities\GetAccount` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability (`manage_options`, or `manage_network_options` when Imagify is network-activated) |
 | Annotations | `readonly: true`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -404,7 +443,7 @@ Registered by `Imagify\Abilities\GetMediaStatus`. Returns the optimization statu
 |-----|-------|
 | Slug | `imagify/get-media-status` |
 | Class | `Imagify\Abilities\GetMediaStatus` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability or, on a network-activated install, `manage-site` (`manage_options` on the current site) |
 | Annotations | `readonly: true`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -438,7 +477,7 @@ Registered by `Imagify\Abilities\GetNextgenCoverage`. Returns the number of opti
 |-----|-------|
 | Slug | `imagify/get-nextgen-coverage` |
 | Class | `Imagify\Abilities\GetNextgenCoverage` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability (`manage_options`, or `manage_network_options` when Imagify is network-activated) |
 | Annotations | `readonly: true`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -459,7 +498,7 @@ Registered by `Imagify\Abilities\GetSettings`. Returns all Imagify configuration
 |-----|-------|
 | Slug | `imagify/get-settings` |
 | Class | `Imagify\Abilities\GetSettings` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability (`manage_options`, or `manage_network_options` when Imagify is network-activated) |
 | Annotations | `readonly: true`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -477,7 +516,7 @@ Registered by `Imagify\Abilities\GetStats`. Returns aggregated optimization stat
 |-----|-------|
 | Slug | `imagify/get-stats` |
 | Class | `Imagify\Abilities\GetStats` |
-| Permission | `manage_options` capability |
+| Permission | the Imagify `manage` capability (`manage_options`, or `manage_network_options` when Imagify is network-activated) |
 | Annotations | `readonly: true`, `destructive: false`, `idempotent: true` |
 | MCP public | `true` |
 
@@ -515,14 +554,14 @@ The `wp` and `custom-folders` objects are always present. Fields default to `0` 
 
 ## Migration notice
 
-`Imagify\MCP\AdapterNotice` (`classes/MCP/AdapterNotice.php`, view `views/notice-mcp-adapter.php`) asks existing MCP users to install the MCP Adapter plugin. It is a plain WordPress notice (`notice notice-info`) printed on `admin_notices`, not through the branded `Imagify\Notices\Notices` pipeline. It links to the plugin installer search (`plugin-install.php?s=mcp-adapter&tab=search&type=term`).
+`Imagify\MCP\AdapterNotice` (`classes/MCP/AdapterNotice.php`, view `views/notice-mcp-adapter.php`) asks existing MCP users to install the MCP Adapter plugin. It is a plain WordPress notice (`notice notice-info`) printed on `admin_notices` and `network_admin_notices`, not through the branded `Imagify\Notices\Notices` pipeline. It links to the plugin installer search (`plugin-install.php?s=mcp-adapter&tab=search&type=term`), through `network_admin_url()` in the network admin.
 
 `should_display(): bool` is true only when all of these hold:
 
 1. The Abilities API is available (`is_abilities_api_available()`, protected).
 2. The current user has `install_plugins` and the Imagify `manage` capability.
 3. No MCP Adapter is loaded (`is_adapter_loaded()`, protected, `class_exists( 'WP\MCP\Core\McpAdapter' )`).
-4. The user has used MCP: any `mcp_refresh_jti_*` user meta (OAuth connection), or a non-empty `mcp_adapter_sessions` (legacy, network-global) or `mcp_adapter_sessions_{blog_id}` user meta.
+4. The user has used MCP: any `mcp_refresh_jti_*` user meta (OAuth connection), or a non-empty `mcp_adapter_sessions` (legacy, network-global) or `mcp_adapter_sessions_{blog_id}` user meta. In the network admin `{blog_id}` is the main site's, so `mcp_refresh_jti_*` is the reliable signal there.
 5. The notice is not dismissed.
 
 Dismissal reuses the Imagify endpoint (`get_imagify_admin_url( 'dismiss-notice', 'mcp-adapter' )`): the id `mcp-adapter` is listed in `Imagify\Notices\Notices::$notice_ids`, and the dismissal is stored per user in the `_imagify_ignore_notices` user meta. STDIO (WP-CLI) users leave no session or OAuth meta and do not see the notice.
