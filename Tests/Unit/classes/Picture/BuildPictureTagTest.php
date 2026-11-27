@@ -186,4 +186,27 @@ class BuildPictureTagTest extends TestCase {
 		$this->assertStringContainsString( 'data-wp-interactive="core/image"', $img_tag );
 		$this->assertStringContainsString( 'data-wp-context="{}"', $img_tag );
 	}
+
+	/**
+	 * Digit-only attribute names become int array keys and must not raise an error
+	 * when the `data-wp` filter runs.
+	 */
+	public function testIntegerAttributeKeysDoNotBreakDataWpFilter(): void {
+		$attributes = [
+			0                     => 'x',
+			'data-wp-interactive' => 'core/image',
+		];
+
+		$image = $this->get_image_data( $attributes );
+
+		$method = $this->get_reflective_method( 'build_picture_tag', Display::class );
+		$output = $method->invoke( $this->get_display_instance(), $image );
+
+		$picture_tag = $this->get_picture_opening_tag( $output );
+		$img_tag     = $this->get_img_tag( $output );
+
+		$this->assertStringContainsString( '0="x"', $picture_tag );
+		$this->assertStringNotContainsString( 'data-wp-interactive', $picture_tag );
+		$this->assertStringContainsString( '0="x"', $img_tag );
+	}
 }

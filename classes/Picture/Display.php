@@ -259,7 +259,8 @@ class Display implements SubscriberInterface {
 		$picture_attributes = array_filter(
 			$attributes,
 			function ( $attribute ) {
-				return strpos( $attribute, 'data-wp' ) === false;
+				// Digit-only attribute names become int array keys.
+				return strpos( (string) $attribute, 'data-wp' ) === false;
 			},
 			ARRAY_FILTER_USE_KEY
 		);
